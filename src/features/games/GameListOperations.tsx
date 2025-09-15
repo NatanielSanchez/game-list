@@ -1,0 +1,75 @@
+import InputFilter from "../../ui/InputFilter";
+import Operations from "../../ui/Operations";
+import MultiSelectFilter, { type MultiSelectOption } from "../../ui/MultiSelectFilter";
+import usePlatforms from "./usePlatforms";
+import useGenres from "./useGenres";
+import useThemes from "./useThemes";
+import SingleSelectFilter, { type SingleSelectOption } from "../../ui/SingleSelectFilter";
+
+function GameListOperations() {
+  const { platforms, isLoading: isFetchingPlatforms } = usePlatforms();
+  const { genres, isLoading: isFetchingGenres } = useGenres();
+  const { themes, isLoading: isFetchingThemes } = useThemes();
+
+  const isFetching = isFetchingGenres || isFetchingPlatforms || isFetchingThemes;
+
+  const platformOptions = platforms?.map((platform) => {
+    return {
+      value: platform.id.toString(),
+      label: platform.name,
+      shortLabel: platform.abbreviation,
+    } as MultiSelectOption;
+  });
+  const genreOptions = genres?.map((genre) => {
+    return {
+      value: genre.id.toString(),
+      label: genre.name,
+    } as MultiSelectOption;
+  });
+  const themeOptions = themes?.map((theme) => {
+    return {
+      value: theme.id.toString(),
+      label: theme.name,
+    } as MultiSelectOption;
+  });
+
+  const sortOptions: SingleSelectOption[] = [
+    { label: "Sort by rating count (desc)", value: "total_rating_count desc" },
+    { label: "Sort by rating count (asc)", value: "total_rating_count asc" },
+    { label: "Sort by name (A-Z)", value: "name desc" },
+    { label: "Sort by name (Z-A)", value: "name asc" },
+    { label: "Sort by newest", value: "first_release_date desc" },
+    { label: "Sort by oldest", value: "first_release_date asc" },
+  ];
+
+  return (
+    <Operations>
+      <InputFilter fieldName="name" />
+
+      <MultiSelectFilter
+        fieldName="platforms"
+        isSearchable={true}
+        placeholder="Search platforms"
+        isLoading={isFetching}
+        options={platformOptions}
+      />
+      <MultiSelectFilter
+        fieldName="genres"
+        isSearchable={true}
+        placeholder="Search genres"
+        isLoading={isFetching}
+        options={genreOptions}
+      />
+      <MultiSelectFilter
+        fieldName="themes"
+        isSearchable={true}
+        placeholder="Search themes"
+        isLoading={isFetching}
+        options={themeOptions}
+      />
+      <SingleSelectFilter fieldName="sort" isSearchable={false} options={sortOptions} />
+    </Operations>
+  );
+}
+
+export default GameListOperations;
