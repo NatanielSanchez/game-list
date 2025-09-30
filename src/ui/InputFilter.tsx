@@ -52,19 +52,19 @@ const Clear = styled.div`
 */
 function InputFilter({ fieldName }: InputFilterProps) {
   const { getParam, setParam, deleteParam } = useQueryParamSync();
-  const [name, setName] = useState(() => {
-    const name = getParam("name");
-    return name || "";
+  const [value, setValue] = useState(() => {
+    const value = getParam(fieldName);
+    return value || "";
   });
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleParamChange(value: string) {
-    setName(value);
+    setValue(value);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      setParam("name", value, "page");
+      setParam(fieldName, value, "page");
     }, 1200);
   }
 
@@ -73,14 +73,14 @@ function InputFilter({ fieldName }: InputFilterProps) {
       <Input
         ref={inputRef}
         placeholder={`Search by ${fieldName}`}
-        value={name}
+        value={value}
         onChange={(e) => handleParamChange(e.target.value)}
       />
       <Clear
         onClick={() => {
           if (timeoutRef.current) clearTimeout(timeoutRef.current);
-          deleteParam("name");
-          setName("");
+          deleteParam(fieldName, undefined, "page");
+          setValue("");
           inputRef.current?.focus();
         }}
       >
